@@ -1,5 +1,12 @@
 <template>
     <div>
+        <select v-model="category_id" class="form-control col-md-3">
+            <option value="">-- Choose category -- </option>
+            <option v-for="category in categories" :key="category.id"
+                :value="category.id">
+                {{ category.name }}
+            </option>
+        </select>
         <table class="table">
             <thead>
                 <tr>
@@ -26,16 +33,29 @@
     export default {
         data() {
             return {
-                posts: {}
+                posts: {},
+                categories: {},
+                category_id: ''
             }
         },
         mounted() {
             this.getResults();
+            this.getCategories();
+        },
+        watch: {
+            category_id(value) {
+                this.getResults();
+            }
         },
         methods: {
             getResults(page = 1) {
-                axios.get('/api/posts?page=' + page).then((response) => {
+                axios.get(`/api/posts?page=${page}&category_id=${this.category_id}`).then((response) => {
                     this.posts = response.data;
+                });
+            },
+            getCategories() {
+                axios.get('/api/categories').then((response) => {
+                    this.categories = response.data.data;
                 });
             }
         }
