@@ -10,10 +10,36 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Title</th>
-                    <th>Post text</th>
-                    <th>Created date</th>
-                    <th>Actions</th>
+                    <th>
+                        <a href="#" @click.prevent="changeSort('title')">Title</a>
+                        <span v-if="this.sort_field == 'title' && this.sort_direction == 'asc'">
+                            &uarr;
+                        </span>
+                        <span v-if="this.sort_field == 'title' && this.sort_direction == 'desc'">
+                            &darr;
+                        </span>
+                    </th>
+                    <th>
+                        <a href="#" @click.prevent="changeSort('post_text')">Post text</a>
+                        <span v-if="this.sort_field == 'post_text' && this.sort_direction == 'asc'">
+                            &uarr;
+                        </span>
+                        <span v-if="this.sort_field == 'post_text' && this.sort_direction == 'desc'">
+                            &darr;
+                        </span>
+                    </th>
+                    <th>
+                        <a href="#" @click.prevent="changeSort('created_at')">Created date</a>
+                        <span v-if="this.sort_field == 'created_at' && this.sort_direction == 'asc'">
+                            &uarr;
+                        </span>
+                        <span v-if="this.sort_field == 'created_at' && this.sort_direction == 'desc'">
+                            &darr;
+                        </span>
+                    </th>
+                    <th>
+                        Actions
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -35,7 +61,9 @@
             return {
                 posts: {},
                 categories: {},
-                category_id: ''
+                category_id: '',
+                sort_field: 'created_at',
+                sort_direction: 'desc',
             }
         },
         mounted() {
@@ -49,14 +77,30 @@
         },
         methods: {
             getResults(page = 1) {
-                axios.get(`/api/posts?page=${page}&category_id=${this.category_id}`).then((response) => {
-                    this.posts = response.data;
-                });
+                axios.get(
+                    '/api/posts?page=' + page
+                    + '&category_id=' + this.category_id
+                    + '&sort_field=' + this.sort_field
+                    + '&sort_direction=' + this.sort_direction
+                    ).then((response) => {
+                        this.posts = response.data;
+                    }
+                );
             },
             getCategories() {
                 axios.get('/api/categories').then((response) => {
                     this.categories = response.data.data;
                 });
+            },
+            changeSort(field) {
+                if (this.sort_field === field) {
+                    this.sort_direction = this.sort_direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.sort_field = field;
+                    this.sort_direction = 'asc';
+                }
+                this.field = field;
+                this.getResults();
             }
         }
     }
