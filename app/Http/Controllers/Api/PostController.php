@@ -9,20 +9,24 @@ use App\Http\Resources\PostResource;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sortField = \request('sort_field', 'created_at');
+        $sortField = $request->sort_field ?: 'created_at';
+
         if (!in_array($sortField, ['title', 'post_text', 'created_at'])) {
             $sortField = 'created_at';
         }
 
-        $sortDirection = \request('sort_direction', 'desc');
+        $sortDirection = $request->sort_direction ?: 'desc';
+
         if (!in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'desc';
         }
 
-        $posts = Post::when(request('category_id', '') !== '', function($query) {
-            $query->where('category_id', request('category_id'));
+        $categoryId = $request->category_id ?: '';
+
+        $posts = Post::when($categoryId !== '', function($query, $categoryId) {
+            $query->where('category_id', $categoryId);
         })->orderBy($sortField, $sortDirection)->paginate(3);
 
         return PostResource::collection($posts);
