@@ -16,12 +16,20 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <router-link to="/" class="nav-link">
+                            <router-link
+                                exact :to="{ name: 'posts.index' }"
+                                class="nav-link"
+                                active-class="active-menu-item"
+                                >
                                 Posts list
                             </router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/posts/create" class="nav-link">
+                            <router-link
+                                exact :to="{ name: 'posts.create' }"
+                                class="nav-link"
+                                active-class="active-menu-item"
+                                >
                                 Add new post
                             </router-link>
                         </li>
@@ -42,4 +50,8 @@
     export default {};
 </script>
 
-<style></style>
+<style>
+    .active-menu-item {
+        font-weight: bold;
+    }
+</style>
