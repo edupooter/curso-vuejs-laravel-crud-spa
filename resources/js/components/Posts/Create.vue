@@ -3,19 +3,19 @@
         <form @submit.prevent="submitForm">
             <div class="form-group">
                 <label for="">Post title:</label>
-                <input type="text" :v-model="fields.title" class="form-control" placeholder="" aria-describedby="helpId">
+                <input type="text" v-model="fields.title" class="form-control" placeholder="" aria-describedby="helpId">
                 <small id="helpId" class="text-muted">Enter the post title</small>
             </div>
 
             <div class="form-group">
                 <label for="">Post text:</label>
-                <textarea rows="10" :v-model="fields.post_text" class="form-control" placeholder="" aria-describedby="helpIdText"></textarea>
+                <textarea rows="10" v-model="fields.post_text" class="form-control" placeholder="" aria-describedby="helpIdText"></textarea>
                 <small id="helpIdText" class="text-muted">Enter the post text</small>
             </div>
 
             <div class="form-group">
                 <label for="">Category:</label>
-                <select :v-model="fields.category_id" class="form-control" placeholder="" aria-describedby="helpIdCategory">
+                <select v-model="fields.category_id" class="form-control" placeholder="" aria-describedby="helpIdCategory">
                     <option v-for="category in categories" :key="category.id" :value="category.id">
                         {{ category.name }}
                     </option>
@@ -53,7 +53,7 @@
         },
         methods: {
             submitForm() {
-                axios.post('api/posts', this.field)
+                axios.post('api/posts', this.fields)
                     .then(response => {
                         this.$router.push('/');
                     });
