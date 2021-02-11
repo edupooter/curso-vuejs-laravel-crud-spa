@@ -50,6 +50,8 @@ class PostController extends Controller
     {
         $post = Post::create($request->validated());
 
+        sleep(3);
+
         return new PostResource($post);
     }
 }
