@@ -35,7 +35,7 @@ class PostController extends Controller
 
         $posts = Post::when($categoryId !== '', function ($query, $categoryId) {
             $query->where('category_id', $categoryId);
-        })->orderBy($sortField, $sortDirection)->paginate(3);
+        })->orderBy($sortField, $sortDirection)->paginate(5);
 
         return PostResource::collection($posts);
     }
@@ -48,9 +48,15 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request): PostResource
     {
+        if ($request->hasFile('thumbnail')) {
+            $filename = $request->thumbnail->getClientOriginalName();
+
+            info($filename);
+        }
+
         $post = Post::create($request->validated());
 
-        sleep(3);
+        sleep(1);
 
         return new PostResource($post);
     }
