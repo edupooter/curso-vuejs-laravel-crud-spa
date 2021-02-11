@@ -77,6 +77,12 @@
                     const { data: categories } = response;
                     this.categories = categories.data;
                 });
+
+            axios.get('/api/posts/' + this.$route.params.id)
+                .then(response => {
+                    const { data: { data } } = response;
+                    this.fields = data;
+                });
         },
         methods: {
             selectFile(event) {
@@ -85,15 +91,9 @@
             submitForm() {
                 this.sendingForm = true;
 
-                let fields = new FormData();
+                const postId = this.$route.params.id;
 
-                for (const key in this.fields) {
-                    if (Object.hasOwnProperty.call(this.fields, key)) {
-                        fields.append(key, this.fields[key]);
-                    }
-                }
-
-                axios.post('/api/posts', fields)
+                axios.put(`/api/posts/${postId}`, this.fields)
                     .then(response => {
                         this.$router.push('/');
                     }).catch(error => {

@@ -18,6 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('posts', 'Api\\PostController', ['only' => ['index', 'store']]);
+Route::apiResource('posts', 'Api\\PostController', ['only' => ['index', 'store', 'show', 'update']]);
 
 Route::get('categories', 'Api\\CategoryController@index');

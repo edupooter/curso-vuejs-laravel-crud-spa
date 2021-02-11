@@ -60,4 +60,28 @@ class PostController extends Controller
 
         return new PostResource($post);
     }
+
+    /**
+     * Retorna um Post
+     *
+     * @param Post $post
+     * @return PostResource
+     */
+    public function show(Post $post): PostResource
+    {
+        return new PostResource($post);
+    }
+
+    /**
+     * Altera um Post
+     *
+     * @param Post $post
+     * @return PostResource
+     */
+    public function update(Post $post, StorePostRequest $request): PostResource
+    {
+        $post->update($request->validated());
+
+        return new PostResource($post);
+    }
 }
