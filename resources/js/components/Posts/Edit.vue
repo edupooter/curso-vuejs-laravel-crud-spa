@@ -95,8 +95,11 @@
 
                 axios.put(`/api/posts/${postId}`, this.fields)
                     .then(response => {
+                        this.$swal('Post updated');
                         this.$router.push('/');
                     }).catch(error => {
+                        this.$swal({ icon: 'error', title: 'Error happened' });
+
                         const { status: statusCode, data: { errors } } = error.response;
                         if (statusCode === 422) {
                             this.errors = errors;
