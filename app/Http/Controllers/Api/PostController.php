@@ -32,9 +32,25 @@ class PostController extends Controller
             $sortDirection = 'desc';
         }
 
+        $filled = array_filter(request()->only([
+            'title',
+            'post_text',
+            'created_at'
+        ]));
+
         $categoryId = $request->category_id ?: '';
 
-        $posts = Post::when($categoryId !== '', function ($query, $categoryId) {
+        $posts = Post::when(count($filled) > 0, function($query) use ($filled) {
+            foreach ($filled as $column => $value) {
+                $query->where($column, 'LIKE', '%' . $value . '%');
+            }
+        })->when(request('search', '') != '', function($query) {
+            $query->where(function ($q) {
+                $q->where('title', 'LIKE', '%' . request('search') . '%')
+                    ->orWhere('post_text', 'LIKE', '%' . request('search') . '%')
+                    ->orWhere('created_at', 'LIKE', '%' . request('search') . '%');
+            });
+        })->when($categoryId !== '', function ($query, $categoryId) {
             $query->where('category_id', $categoryId);
         })->orderBy($sortField, $sortDirection)->paginate(5);
 

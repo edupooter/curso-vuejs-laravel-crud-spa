@@ -1,45 +1,55 @@
 <template>
     <div>
-        <select v-model="category_id" class="form-control col-md-3">
-            <option value="">-- Choose category -- </option>
-            <option v-for="category in categories" :key="category.id"
-                :value="category.id">
-                {{ category.name }}
-            </option>
-        </select>
+        <div class="row justify-content-between pb-4">
+            <select v-model="params.category_id" class="form-control col-md-3">
+                <option value="">-- Choose category -- </option>
+                <option v-for="category in categories" :key="category.id"
+                    :value="category.id">
+                    {{ category.name }}
+                </option>
+            </select>
+            <input type="text" v-model="search"
+                class="form-control col-md-3" placeholder="Search (min 4 letters)" />
+        </div>
+
         <table class="table">
             <thead>
                 <tr>
                     <th>
                         <a href="#" @click.prevent="changeSort('title')">Title</a>
-                        <span v-if="this.sort_field == 'title' && this.sort_direction == 'asc'">
+                        <span v-if="this.params.sort_field == 'title' && this.params.sort_direction == 'asc'">
                             &uarr;
                         </span>
-                        <span v-if="this.sort_field == 'title' && this.sort_direction == 'desc'">
+                        <span v-if="this.params.sort_field == 'title' && this.params.sort_direction == 'desc'">
                             &darr;
                         </span>
                     </th>
                     <th>
                         <a href="#" @click.prevent="changeSort('post_text')">Post text</a>
-                        <span v-if="this.sort_field == 'post_text' && this.sort_direction == 'asc'">
+                        <span v-if="this.params.sort_field == 'post_text' && this.params.sort_direction == 'asc'">
                             &uarr;
                         </span>
-                        <span v-if="this.sort_field == 'post_text' && this.sort_direction == 'desc'">
+                        <span v-if="this.params.sort_field == 'post_text' && this.params.sort_direction == 'desc'">
                             &darr;
                         </span>
                     </th>
                     <th>
                         <a href="#" @click.prevent="changeSort('created_at')">Created date</a>
-                        <span v-if="this.sort_field == 'created_at' && this.sort_direction == 'asc'">
+                        <span v-if="this.params.sort_field == 'created_at' && this.params.sort_direction == 'asc'">
                             &uarr;
                         </span>
-                        <span v-if="this.sort_field == 'created_at' && this.sort_direction == 'desc'">
+                        <span v-if="this.params.sort_field == 'created_at' && this.params.sort_direction == 'desc'">
                             &darr;
                         </span>
                     </th>
                     <th>
                         Actions
                     </th>
+                </tr>
+                <tr>
+                    <th><input type="text" class="form-input w100" v-model="params.title"></th>
+                    <th><input type="text" class="form-input w100" v-model="params.post_text"></th>
+                    <th><input type="text" class="form-input w100" v-model="params.created_at"></th>
                 </tr>
             </thead>
             <tbody>
@@ -71,9 +81,15 @@
             return {
                 posts: {},
                 categories: {},
-                category_id: '',
-                sort_field: 'created_at',
-                sort_direction: 'desc',
+                params: {
+                    category_id: '',
+                    title: '',
+                    post_text: '',
+                    created_at: '',
+                    sort_direction: 'desc',
+                    sort_field: 'created_at',
+                },
+                search: '',
             }
         },
         mounted() {
@@ -81,18 +97,29 @@
             this.getCategories();
         },
         watch: {
-            category_id(value) {
-                this.getResults();
+            params: {
+                handler() {
+                    this.getResults();
+                },
+                deep: true
+            },
+            search(val, old) {
+                if (val.length >= 4 || old.length >= 4) {
+                    this.getResults();
+                }
             }
         },
         methods: {
             getResults(page = 1) {
                 axios.get(
-                    '/api/posts?page=' + page
-                    + '&category_id=' + this.category_id
-                    + '&sort_field=' + this.sort_field
-                    + '&sort_direction=' + this.sort_direction
-                    ).then((response) => {
+                    '/api/posts',
+                    {
+                        params: {
+                            page,
+                            search: this.search.length >= 4 ? this.search : '',
+                            ...this.params
+                        }
+                    }).then((response) => {
                         this.posts = response.data;
                     }
                 );
@@ -103,11 +130,11 @@
                 });
             },
             changeSort(field) {
-                if (this.sort_field === field) {
-                    this.sort_direction = this.sort_direction === 'asc' ? 'desc' : 'asc';
+                if (this.params.sort_field === field) {
+                    this.params.sort_direction = this.params.sort_direction === 'asc' ? 'desc' : 'asc';
                 } else {
-                    this.sort_field = field;
-                    this.sort_direction = 'asc';
+                    this.params.sort_field = field;
+                    this.params.sort_direction = 'asc';
                 }
                 this.field = field;
                 this.getResults();
