@@ -8,6 +8,7 @@ use App\Http\Resources\PostResource;
 use App\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
@@ -83,5 +84,18 @@ class PostController extends Controller
         $post->update($request->validated());
 
         return new PostResource($post);
+    }
+
+    /**
+     * Exclui um Post
+     *
+     * @param Post $post
+     * @return Response
+     */
+    public function destroy(Post $post): Response
+    {
+        $post->delete();
+
+        return response()->noContent();
     }
 }

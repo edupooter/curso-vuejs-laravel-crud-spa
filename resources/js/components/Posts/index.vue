@@ -48,9 +48,15 @@
                     <td>{{ post.post_text.substring(0, 50) }}</td>
                     <td>{{ post.created_at }}</td>
                     <td>
-                        <router-link :to="{ name: 'posts.edit', params: { id: post.id } }">
+                        <router-link
+                            class="btn btn-info btn-sm"
+                            :to="{ name: 'posts.edit', params: { id: post.id } }">
                             Edit
                         </router-link>
+                        <button class="btn btn-danger btn-sm"
+                            @click="deletePost(post.id)">
+                            Delete
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -105,6 +111,27 @@
                 }
                 this.field = field;
                 this.getResults();
+            },
+            deletePost(postId) {
+                this.$swal({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        axios.delete(`/api/posts/${postId}`)
+                            .then(response => {
+                                this.$swal('Post deleted');
+                                this.getResults();
+                            }).catch(error => {
+                                this.$swal({ icon: 'error', title: 'Error happened' });
+                            });
+                    }
+                });
             }
         }
     }
